@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"sync"
 )
 
 func readInput(fileName string) []int {
@@ -33,8 +32,7 @@ func readInput(fileName string) []int {
 	return arr
 }
 
-func ezMode(input []int, wg *sync.WaitGroup, ch chan<- int) {
-	defer wg.Done()
+func ezMode(input []int, ch chan<- int) {
 	increased := 0
 	for i := 0; i < len(input)-1; i++ {
 		if input[i] < input[i+1] {
@@ -44,8 +42,7 @@ func ezMode(input []int, wg *sync.WaitGroup, ch chan<- int) {
 	ch <- increased
 }
 
-func hardMode(input []int, wg *sync.WaitGroup, ch chan<- int) {
-	defer wg.Done()
+func hardMode(input []int, ch chan<- int) {
 	increased := 0
 	for i := 0; i < len(input)-3; i++ {
 		a := input[i] + input[i+1] + input[i+2]
@@ -61,15 +58,12 @@ func Go() {
 	fmt.Println("Sonar Sweep:")
 	input := readInput("./src/challenges/day01/sonar_sweep.txt")
 
-	var wg sync.WaitGroup
-	wg.Add(2)
 	ezChan := make(chan int)
 	hardChan := make(chan int)
 
-	go ezMode(input, &wg, ezChan)
-	go hardMode(input, &wg, hardChan)
+	go ezMode(input, ezChan)
+	go hardMode(input, hardChan)
 
 	fmt.Printf("  ezMode: %d\n", <-ezChan)
 	fmt.Printf("  hardMode: %d\n", <-hardChan)
-	wg.Wait()
 }
