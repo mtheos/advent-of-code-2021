@@ -54,8 +54,7 @@ func hardMode(input []int, ch chan<- int) {
 	ch <- increased
 }
 
-func Go() {
-	fmt.Println("Sonar Sweep:")
+func Go(ch chan string) {
 	input := readInput("./src/challenges/day01/sonar_sweep.txt")
 
 	ezChan := make(chan int)
@@ -64,6 +63,7 @@ func Go() {
 	go ezMode(input, ezChan)
 	go hardMode(input, hardChan)
 
-	fmt.Printf("  ezMode: %d\n", <-ezChan)
-	fmt.Printf("  hardMode: %d\n", <-hardChan)
+	ch <- fmt.Sprintf("ezMode: %d\n", <-ezChan)
+	ch <- fmt.Sprintf("hardMode: %d\n", <-hardChan)
+	close(ch)
 }
