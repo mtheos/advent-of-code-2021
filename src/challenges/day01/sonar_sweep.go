@@ -63,7 +63,7 @@ func Go(ch chan string) {
 	go ezMode(input, ezChan)
 	go hardMode(input, hardChan)
 
-	ch <- fmt.Sprintf("ezMode: %d\n", <-ezChan)
-	ch <- fmt.Sprintf("hardMode: %d\n", <-hardChan)
+	ch <- fmt.Sprintf("  ezMode: %d\n", <-ezChan)
+	ch <- fmt.Sprintf("  hardMode: %d\n", <-hardChan)
 	close(ch)
 }
