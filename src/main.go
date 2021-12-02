@@ -2,6 +2,7 @@ package main
 
 import (
 	sonarSweep "advent-of-code-2021/src/challenges/day01"
+	dive "advent-of-code-2021/src/challenges/day02"
 	"fmt"
 )
 
@@ -23,6 +24,11 @@ func main() {
 	challenges = append(challenges, challenge{
 		name: "Sonar Sweep",
 		run:  sonarSweep.Go,
+		ch:   make(chan string),
+	})
+	challenges = append(challenges, challenge{
+		name: "Dive!",
+		run:  dive.Go,
 		ch:   make(chan string),
 	})
 
