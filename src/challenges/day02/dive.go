@@ -8,6 +8,12 @@ import (
 	"strings"
 )
 
+const (
+	F byte = iota
+	U
+	D
+)
+
 type movement struct {
 	direction byte
 	steps     int
@@ -17,6 +23,19 @@ type position struct {
 	horizontal int
 	vertical   int
 	aim        int
+}
+
+func mapDirection(direction byte) byte {
+	switch direction {
+	case 'f':
+		return F
+	case 'u':
+		return U
+	case 'd':
+		return D
+	default:
+		panic("Unknown direction " + string(direction))
+	}
 }
 
 func readInput(fileName string) []movement {
@@ -35,7 +54,7 @@ func readInput(fileName string) []movement {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		words := strings.Fields(scanner.Text())
-		direction := strings.ToUpper(words[0])[0]
+		direction := mapDirection(words[0][0])
 		num, err := strconv.Atoi(words[1])
 		if err != nil {
 			panic(err)
@@ -49,15 +68,17 @@ func ezMode(input []movement, ch chan<- int) {
 	pos := position{}
 	for _, move := range input {
 		switch move.direction {
-		case 'F':
+		case F:
 			pos.horizontal += move.steps
 			break
-		case 'U':
+		case U:
 			pos.vertical -= move.steps
 			break
-		case 'D':
+		case D:
 			pos.vertical += move.steps
 			break
+		default:
+			panic("Unmatched case " + string(move.direction))
 		}
 	}
 	ch <- pos.horizontal * pos.vertical
@@ -67,16 +88,18 @@ func hardMode(input []movement, ch chan<- int) {
 	pos := position{}
 	for _, move := range input {
 		switch move.direction {
-		case 'F':
+		case F:
 			pos.horizontal += move.steps
 			pos.vertical += pos.aim * move.steps
 			break
-		case 'U':
+		case U:
 			pos.aim -= move.steps
 			break
-		case 'D':
+		case D:
 			pos.aim += move.steps
 			break
+		default:
+			panic("Unmatched case " + string(move.direction))
 		}
 	}
 	ch <- pos.horizontal * pos.vertical
