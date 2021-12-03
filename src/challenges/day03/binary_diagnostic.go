@@ -28,28 +28,34 @@ func readInput(fileName string) []string {
 	return arr
 }
 
-func countBits(input []string) (map[int]int, int) {
-	numBits := 0
-	bits := make(map[int]int)
+func countNthBit(input []string, nth int) int {
+	count := 0
 	for _, byte_ := range input {
-		for i, bit := range byte_ {
-			numBits = i + 1
-			if bit == '1' {
-				bits[i]++
-			} else {
-				bits[i]--
-			}
+		if byte_[nth] == '1' {
+			count++
+		} else {
+			count--
 		}
 	}
-	return bits, numBits
+	return count
 }
 
-func getGammaAndEpsilon(bits map[int]int, numBits int) (string, string) {
+func countAllBits(input []string) []int {
+	numBits := len(input[0])
+	bits := make([]int, numBits)
+	currentBit := 0
+	for currentBit < numBits {
+		bits[currentBit] = countNthBit(input, currentBit)
+		currentBit++
+	}
+	return bits
+}
+
+func getGammaAndEpsilon(bits []int, numBits int) (string, string) {
 	gamma := ""
 	epsilon := ""
 	for i := 0; i < numBits; i++ {
-		bit := bits[i]
-		if bit >= 0 {
+		if bits[i] >= 0 {
 			gamma += "1"
 			epsilon += "0"
 		} else {
@@ -60,26 +66,14 @@ func getGammaAndEpsilon(bits map[int]int, numBits int) (string, string) {
 	return gamma, epsilon
 }
 
-func whittleDown(input []string, predicate func(int) bool) string {
+func whittleDown(input []string, mapper func(int) uint8) string {
 	currentBit := 0
 	for len(input) > 1 {
-		count := 0
-		for _, byte_ := range input {
-			if byte_[currentBit] == '1' {
-				count++
-			} else {
-				count--
-			}
-		}
+		count := countNthBit(input, currentBit)
 		var tmp []string
-		var val uint8
-		if predicate(count) {
-			val = '1'
-		} else {
-			val = '0'
-		}
+		match := mapper(count)
 		for _, byte_ := range input {
-			if byte_[currentBit] == val {
+			if byte_[currentBit] == match {
 				tmp = append(tmp, byte_)
 			}
 		}
@@ -90,7 +84,8 @@ func whittleDown(input []string, predicate func(int) bool) string {
 }
 
 func ezMode(input []string, ch chan<- int) {
-	bits, numBits := countBits(input)
+	numBits := len(input[0])
+	bits := countAllBits(input)
 	gamma, epsilon := getGammaAndEpsilon(bits, numBits)
 	g, err := strconv.ParseInt(gamma, 2, 32)
 	if err != nil {
@@ -103,10 +98,29 @@ func ezMode(input []string, ch chan<- int) {
 	ch <- int(g * e)
 }
 
+type intPredicate func(i int) bool
+
+func predicate(count int) bool {
+	return count >= 0
+}
+
+func mapper(predicate intPredicate) func(uint8, uint8) func(int) uint8 {
+	return func(truthy uint8, falsy uint8) func(int) uint8 {
+		return func(count int) uint8 {
+			if predicate(count) {
+				return truthy
+			} else {
+				return falsy
+			}
+		}
+	}
+}
+
 func hardMode(input []string, ch chan<- int) {
-	predicate := func(count int) bool { return count >= 0 }
-	o2 := whittleDown(input, predicate)
-	co2 := whittleDown(input, func(count int) bool { return !predicate(count) })
+	o2Mapper := mapper(predicate)
+	co2Mapper := mapper(predicate)
+	o2 := whittleDown(input, o2Mapper('1', '0'))
+	co2 := whittleDown(input, co2Mapper('0', '1'))
 	o, err := strconv.ParseInt(o2, 2, 32)
 	if err != nil {
 		panic(err)
