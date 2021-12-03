@@ -100,27 +100,27 @@ func ezMode(input []string, ch chan<- int) {
 
 type intPredicate func(i int) bool
 
-func predicate(count int) bool {
+func gteZeroPredicate(count int) bool {
 	return count >= 0
 }
 
-func mapper(predicate intPredicate) func(uint8, uint8) func(int) uint8 {
-	return func(truthy uint8, falsy uint8) func(int) uint8 {
-		return func(count int) uint8 {
-			if predicate(count) {
-				return truthy
-			} else {
-				return falsy
-			}
+func (predicate intPredicate) mapTrueFalse(truthy uint8, falsy uint8) func(int) uint8 {
+	return func(count int) uint8 {
+		if predicate(count) {
+			return truthy
+		} else {
+			return falsy
 		}
 	}
 }
 
 func hardMode(input []string, ch chan<- int) {
-	o2Mapper := mapper(predicate)
-	co2Mapper := mapper(predicate)
-	o2 := whittleDown(input, o2Mapper('1', '0'))
-	co2 := whittleDown(input, co2Mapper('0', '1'))
+	trueFalseMapper := intPredicate(gteZeroPredicate).mapTrueFalse
+	o2Mapper := trueFalseMapper('1', '0')
+	co2Mapper := trueFalseMapper('0', '1')
+	o2 := whittleDown(input, o2Mapper)
+	co2 := whittleDown(input, co2Mapper)
+
 	o, err := strconv.ParseInt(o2, 2, 32)
 	if err != nil {
 		panic(err)
@@ -129,6 +129,7 @@ func hardMode(input []string, ch chan<- int) {
 	if err != nil {
 		panic(err)
 	}
+
 	ch <- int(o * c)
 }
 
