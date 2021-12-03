@@ -3,6 +3,7 @@ package main
 import (
 	sonarSweep "advent-of-code-2021/src/challenges/day01"
 	dive "advent-of-code-2021/src/challenges/day02"
+	binaryDiagnostic "advent-of-code-2021/src/challenges/day03"
 	"fmt"
 )
 
@@ -31,11 +32,15 @@ func main() {
 		run:  dive.Go,
 		ch:   make(chan string),
 	})
+	challenges = append(challenges, challenge{
+		name: "Binary Diagnostic",
+		run:  binaryDiagnostic.Go,
+		ch:   make(chan string),
+	})
 
 	for _, chal := range challenges {
 		go chal.run(chal.ch)
 	}
-
 	for _, chal := range challenges {
 		printResults(chal)
 	}
