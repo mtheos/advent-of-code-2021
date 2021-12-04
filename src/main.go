@@ -4,6 +4,7 @@ import (
 	day01 "advent-of-code-2021/src/challenges/day01"
 	day02 "advent-of-code-2021/src/challenges/day02"
 	day03 "advent-of-code-2021/src/challenges/day03"
+	day04 "advent-of-code-2021/src/challenges/day04"
 	"fmt"
 )
 
@@ -38,6 +39,12 @@ func main() {
 		run:   day03.Go,
 		ch:    make(chan string),
 		input: "./src/challenges/day03/input.txt",
+	})
+	// Giant Squid
+	challenges = append(challenges, challenge{
+		run:   day04.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day04/input.txt",
 	})
 
 	for _, chal := range challenges {
