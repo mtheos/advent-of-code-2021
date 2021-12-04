@@ -7,6 +7,22 @@ import (
 	"strconv"
 )
 
+type intPredicate func(i int) bool
+
+func gteZeroPredicate(count int) bool {
+	return count >= 0
+}
+
+func (predicate intPredicate) mapTrueFalse(truthy uint8, falsy uint8) func(int) uint8 {
+	return func(count int) uint8 {
+		if predicate(count) {
+			return truthy
+		} else {
+			return falsy
+		}
+	}
+}
+
 func readInput(fileName string) []string {
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -96,22 +112,6 @@ func ezMode(input []string, ch chan<- int) {
 		panic(err)
 	}
 	ch <- int(g * e)
-}
-
-type intPredicate func(i int) bool
-
-func gteZeroPredicate(count int) bool {
-	return count >= 0
-}
-
-func (predicate intPredicate) mapTrueFalse(truthy uint8, falsy uint8) func(int) uint8 {
-	return func(count int) uint8 {
-		if predicate(count) {
-			return truthy
-		} else {
-			return falsy
-		}
-	}
 }
 
 func hardMode(input []string, ch chan<- int) {
