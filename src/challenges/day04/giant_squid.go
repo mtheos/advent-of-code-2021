@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 type Board []Row
@@ -83,39 +84,53 @@ func parseBoards(input []string) []Board {
 	return boards
 }
 
-func isRowWon(row Row) bool {
+func isRowWon(row Row, ch chan bool, wg *sync.WaitGroup) {
+	defer wg.Done()
 	for _, cell := range row {
 		if cell != -1 {
-			return false
+			ch <- false
+			return
 		}
 	}
-	return true
+	ch <- true
 }
 
-func isColWon(board Board, col int) bool {
+func isColWon(board Board, col int, ch chan bool, wg *sync.WaitGroup) {
+	defer wg.Done()
 	for row := 0; row < 5; row++ {
 		if board[row][col] != -1 {
-			return false
+			ch <- false
+			return
 		}
 	}
-	return true
+	ch <- true
 }
 
 func isWon(board Board) bool {
+	ch := make(chan bool, 10)
+	var wg sync.WaitGroup
+
 	for _, row := range board {
-		if isRowWon(row) {
-			return true
-		}
+		wg.Add(1)
+		go isRowWon(row, ch, &wg)
 	}
 	for i := 0; i < 5; i++ {
-		if isColWon(board, i) {
+		wg.Add(1)
+		go isColWon(board, i, ch, &wg)
+	}
+
+	wg.Wait()
+	close(ch)
+	for b := range ch {
+		if b {
 			return true
 		}
 	}
 	return false
 }
 
-func playRow(move int, row Row) {
+func playRow(move int, row Row, wg *sync.WaitGroup) {
+	defer wg.Done()
 	for i, cell := range row {
 		if cell == move {
 			row[i] = -1
@@ -124,9 +139,12 @@ func playRow(move int, row Row) {
 }
 
 func playBoard(move int, board Board) bool {
+	var wg sync.WaitGroup
 	for _, row := range board {
-		playRow(move, row)
+		wg.Add(1)
+		go playRow(move, row, &wg)
 	}
+	wg.Wait()
 	return isWon(board)
 }
 
