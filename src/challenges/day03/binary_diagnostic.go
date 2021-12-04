@@ -133,8 +133,8 @@ func hardMode(input []string, ch chan<- int) {
 	ch <- int(o * c)
 }
 
-func Go(ch chan string) {
-	input := readInput("./src/challenges/day03/binary_diagnostic.txt")
+func Go(fileName string, ch chan string) {
+	input := readInput(fileName)
 
 	ezChan := make(chan int)
 	hardChan := make(chan int)
@@ -142,6 +142,7 @@ func Go(ch chan string) {
 	go ezMode(input, ezChan)
 	go hardMode(input, hardChan)
 
+	ch <- fmt.Sprintln("Binary Diagnostic")
 	ch <- fmt.Sprintf("  ezMode: %d\n", <-ezChan)
 	ch <- fmt.Sprintf("  hardMode: %d\n", <-hardChan)
 	close(ch)

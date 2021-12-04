@@ -105,8 +105,8 @@ func hardMode(input []movement, ch chan<- int) {
 	ch <- pos.horizontal * pos.vertical
 }
 
-func Go(ch chan string) {
-	input := readInput("./src/challenges/day02/dive.txt")
+func Go(fileName string, ch chan string) {
+	input := readInput(fileName)
 
 	ezChan := make(chan int)
 	hardChan := make(chan int)
@@ -114,6 +114,7 @@ func Go(ch chan string) {
 	go ezMode(input, ezChan)
 	go hardMode(input, hardChan)
 
+	ch <- fmt.Sprintln("Dive!")
 	ch <- fmt.Sprintf("  ezMode: %d\n", <-ezChan)
 	ch <- fmt.Sprintf("  hardMode: %d\n", <-hardChan)
 	close(ch)
