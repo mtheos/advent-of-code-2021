@@ -5,6 +5,7 @@ import (
 	day02 "advent-of-code-2021/src/challenges/day02"
 	day03 "advent-of-code-2021/src/challenges/day03"
 	day04 "advent-of-code-2021/src/challenges/day04"
+	day05 "advent-of-code-2021/src/challenges/day05"
 	"fmt"
 )
 
@@ -45,6 +46,12 @@ func main() {
 		run:   day04.Go,
 		ch:    make(chan string),
 		input: "./src/challenges/day04/input.txt",
+	})
+	// Hydrothermal Venture
+	challenges = append(challenges, challenge{
+		run:   day05.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day05/input.txt",
 	})
 
 	for _, chal := range challenges {
