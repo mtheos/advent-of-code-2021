@@ -7,6 +7,7 @@ import (
 	day04 "advent-of-code-2021/src/challenges/day04"
 	day05 "advent-of-code-2021/src/challenges/day05"
 	day06 "advent-of-code-2021/src/challenges/day06"
+	day07 "advent-of-code-2021/src/challenges/day07"
 	"fmt"
 )
 
@@ -23,6 +24,16 @@ func printResults(chal challenge) {
 }
 
 func main() {
+	challenges := createChallenges()
+	for _, chal := range challenges {
+		go chal.run(chal.input, chal.ch)
+	}
+	for _, chal := range challenges {
+		printResults(chal)
+	}
+}
+
+func createChallenges() []challenge {
 	var challenges []challenge
 	// Sonar Sweep
 	challenges = append(challenges, challenge{
@@ -60,11 +71,11 @@ func main() {
 		ch:    make(chan string),
 		input: "./src/challenges/day06/input.txt",
 	})
-
-	for _, chal := range challenges {
-		go chal.run(chal.input, chal.ch)
-	}
-	for _, chal := range challenges {
-		printResults(chal)
-	}
+	// The Treachery of Whales
+	challenges = append(challenges, challenge{
+		run:   day07.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day07/input.txt",
+	})
+	return challenges
 }
