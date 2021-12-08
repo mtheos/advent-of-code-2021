@@ -8,6 +8,7 @@ import (
 	day05 "advent-of-code-2021/src/challenges/day05"
 	day06 "advent-of-code-2021/src/challenges/day06"
 	day07 "advent-of-code-2021/src/challenges/day07"
+	day08 "advent-of-code-2021/src/challenges/day08"
 	"fmt"
 )
 
@@ -76,6 +77,12 @@ func createChallenges() []challenge {
 		run:   day07.Go,
 		ch:    make(chan string),
 		input: "./src/challenges/day07/input.txt",
+	})
+	// Seven Segment Search
+	challenges = append(challenges, challenge{
+		run:   day08.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day08/input.txt",
 	})
 	return challenges
 }
