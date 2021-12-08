@@ -1,4 +1,4 @@
-package giantSquid
+package lanternfish
 
 import (
 	"bufio"
