@@ -1,6 +1,7 @@
 package lanternfish
 
 import (
+	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
 	"os"
@@ -10,14 +11,10 @@ import (
 
 func readInput(fileName string) []int {
 	file, err := os.Open(fileName)
-	if err != nil {
-		panic(err)
-	}
+	MaybePanic(err)
 	defer func(file *os.File) {
 		err := file.Close()
-		if err != nil {
-			panic(err)
-		}
+		MaybePanic(err)
 	}(file)
 
 	scanner := bufio.NewScanner(file)
@@ -27,9 +24,7 @@ func readInput(fileName string) []int {
 	split := strings.Split(line, ",")
 	for _, fishy := range split {
 		age, err := strconv.Atoi(fishy)
-		if err != nil {
-			panic(err)
-		}
+		MaybePanic(err)
 		arr = append(arr, age)
 	}
 	return arr

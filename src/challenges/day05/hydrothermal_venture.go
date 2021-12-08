@@ -1,6 +1,7 @@
 package hydrothermalVenture
 
 import (
+	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
 	"os"
@@ -18,14 +19,10 @@ type Point struct {
 
 func readInput(fileName string) []Line {
 	file, err := os.Open(fileName)
-	if err != nil {
-		panic(err)
-	}
+	MaybePanic(err)
 	defer func(file *os.File) {
 		err := file.Close()
-		if err != nil {
-			panic(err)
-		}
+		MaybePanic(err)
 	}(file)
 
 	scanner := bufio.NewScanner(file)
@@ -43,13 +40,9 @@ func readInput(fileName string) []Line {
 func parsePoint(input string) Point {
 	split := strings.Split(input, ",")
 	x, err := strconv.Atoi(split[0])
-	if err != nil {
-		panic(err)
-	}
+	MaybePanic(err)
 	y, err := strconv.Atoi(split[1])
-	if err != nil {
-		panic(err)
-	}
+	MaybePanic(err)
 	return Point{x, y}
 }
 

@@ -1,6 +1,7 @@
 package sonarSweep
 
 import (
+	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
 	"os"
@@ -9,14 +10,10 @@ import (
 
 func readInput(fileName string) []int {
 	file, err := os.Open(fileName)
-	if err != nil {
-		panic(err)
-	}
+	MaybePanic(err)
 	defer func(file *os.File) {
 		err := file.Close()
-		if err != nil {
-			panic(err)
-		}
+		MaybePanic(err)
 	}(file)
 
 	var arr []int
@@ -24,9 +21,7 @@ func readInput(fileName string) []int {
 	for scanner.Scan() {
 		line := scanner.Text()
 		num, err := strconv.Atoi(line)
-		if err != nil {
-			panic(err)
-		}
+		MaybePanic(err)
 		arr = append(arr, num)
 	}
 	return arr

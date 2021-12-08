@@ -1,6 +1,7 @@
 package binaryDiagnostic
 
 import (
+	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
 	"os"
@@ -25,14 +26,10 @@ func (predicate intPredicate) mapTrueFalse(truthy uint8, falsy uint8) func(int) 
 
 func readInput(fileName string) []string {
 	file, err := os.Open(fileName)
-	if err != nil {
-		panic(err)
-	}
+	MaybePanic(err)
 	defer func(file *os.File) {
 		err := file.Close()
-		if err != nil {
-			panic(err)
-		}
+		MaybePanic(err)
 	}(file)
 
 	var arr []string
@@ -104,13 +101,9 @@ func ezMode(input []string, ch chan<- int) {
 	bits := countAllBits(input)
 	gamma, epsilon := getGammaAndEpsilon(bits, numBits)
 	g, err := strconv.ParseInt(gamma, 2, 32)
-	if err != nil {
-		panic(err)
-	}
+	MaybePanic(err)
 	e, err := strconv.ParseInt(epsilon, 2, 32)
-	if err != nil {
-		panic(err)
-	}
+	MaybePanic(err)
 	ch <- int(g * e)
 }
 
@@ -122,13 +115,9 @@ func hardMode(input []string, ch chan<- int) {
 	co2 := whittleDown(input, co2Mapper)
 
 	o, err := strconv.ParseInt(o2, 2, 32)
-	if err != nil {
-		panic(err)
-	}
+	MaybePanic(err)
 	c, err := strconv.ParseInt(co2, 2, 32)
-	if err != nil {
-		panic(err)
-	}
+	MaybePanic(err)
 
 	ch <- int(o * c)
 }

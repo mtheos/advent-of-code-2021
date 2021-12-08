@@ -1,6 +1,7 @@
 package sevenSegmentSearch
 
 import (
+	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
 	"os"
@@ -27,14 +28,10 @@ type Display struct {
 
 func readInput(fileName string) []Display {
 	file, err := os.Open(fileName)
-	if err != nil {
-		panic(err)
-	}
+	MaybePanic(err)
 	defer func(file *os.File) {
 		err := file.Close()
-		if err != nil {
-			panic(err)
-		}
+		MaybePanic(err)
 	}(file)
 
 	scanner := bufio.NewScanner(file)

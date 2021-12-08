@@ -1,6 +1,7 @@
 package theTreacheryofWhales
 
 import (
+	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
 	"math"
@@ -12,14 +13,10 @@ import (
 
 func readInput(fileName string) []int {
 	file, err := os.Open(fileName)
-	if err != nil {
-		panic(err)
-	}
+	MaybePanic(err)
 	defer func(file *os.File) {
 		err := file.Close()
-		if err != nil {
-			panic(err)
-		}
+		MaybePanic(err)
 	}(file)
 
 	scanner := bufio.NewScanner(file)
@@ -29,9 +26,7 @@ func readInput(fileName string) []int {
 	split := strings.Split(line, ",")
 	for _, crabs := range split {
 		age, err := strconv.Atoi(crabs)
-		if err != nil {
-			panic(err)
-		}
+		MaybePanic(err)
 		arr = append(arr, age)
 	}
 	return arr
