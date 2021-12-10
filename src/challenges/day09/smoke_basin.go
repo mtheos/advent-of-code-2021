@@ -1,4 +1,4 @@
-package smoke
+package smokeBasin
 
 import (
 	. "advent-of-code-2021/src/utils"
