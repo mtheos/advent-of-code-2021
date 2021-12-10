@@ -9,6 +9,7 @@ import (
 	day06 "advent-of-code-2021/src/challenges/day06"
 	day07 "advent-of-code-2021/src/challenges/day07"
 	day08 "advent-of-code-2021/src/challenges/day08"
+	day09 "advent-of-code-2021/src/challenges/day09"
 	"fmt"
 )
 
@@ -83,6 +84,12 @@ func createChallenges() []challenge {
 		run:   day08.Go,
 		ch:    make(chan string),
 		input: "./src/challenges/day08/input.txt",
+	})
+	// Smoke Basin
+	challenges = append(challenges, challenge{
+		run:   day09.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day09/input.txt",
 	})
 	return challenges
 }

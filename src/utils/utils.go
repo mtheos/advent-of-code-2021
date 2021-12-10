@@ -24,3 +24,7 @@ func StrCat(stringsArr ...string) string {
 	}
 	return sb.String()
 }
+
+func InBounds(i int, length int) bool {
+	return i >= 0 && i < length
+}
