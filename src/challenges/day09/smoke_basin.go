@@ -39,7 +39,7 @@ func placeAndSort(largestBasins *[3]int, size int) {
 	sort.Ints(largestBasins[:])
 }
 
-func sizeBasin(x, y int, input [][]int, visited [][]bool) int {
+func sizeBasinHelper(x, y int, input [][]int, visited [][]bool) int {
 	if !InBounds(x, len(input)) || !InBounds(y, len(input[x])) {
 		return 0
 	}
@@ -50,7 +50,11 @@ func sizeBasin(x, y int, input [][]int, visited [][]bool) int {
 		return 0
 	}
 	visited[x][y] = true
-	return 1 + sizeBasin(x+1, y, input, visited) + sizeBasin(x-1, y, input, visited) + sizeBasin(x, y+1, input, visited) + sizeBasin(x, y-1, input, visited)
+	return 1 + sizeBasinHelper(x+1, y, input, visited) + sizeBasinHelper(x-1, y, input, visited) + sizeBasinHelper(x, y+1, input, visited) + sizeBasinHelper(x, y-1, input, visited)
+}
+
+func sizeBasin(x, y int, input [][]int, visited [][]bool, resultChan chan int) {
+	resultChan <- sizeBasinHelper(x, y, input, visited)
 }
 
 func isLowestPoint(x, y int, basin [][]int) bool {
@@ -97,10 +101,15 @@ func hardMode(input [][]int, ch chan<- int) {
 		}
 	}
 
-	var largestBasins = [3]int{0, 0, 0}
+	var largestBasins = [3]int{}
+	resultChan := make(chan int)
+	results := 0
 	for _, point := range lowestPoints {
-		size := sizeBasin(point.x, point.y, input, visited)
-		placeAndSort(&largestBasins, size)
+		go sizeBasin(point.x, point.y, input, visited, resultChan)
+		results += 1
+	}
+	for ; results > 0; results-- {
+		placeAndSort(&largestBasins, <-resultChan)
 	}
 	size := 1
 	for _, basinSize := range largestBasins {
