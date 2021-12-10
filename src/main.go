@@ -10,6 +10,7 @@ import (
 	day07 "advent-of-code-2021/src/challenges/day07"
 	day08 "advent-of-code-2021/src/challenges/day08"
 	day09 "advent-of-code-2021/src/challenges/day09"
+	day10 "advent-of-code-2021/src/challenges/day10"
 	"fmt"
 )
 
@@ -90,6 +91,12 @@ func createChallenges() []challenge {
 		run:   day09.Go,
 		ch:    make(chan string),
 		input: "./src/challenges/day09/input.txt",
+	})
+	// Syntax Scoring
+	challenges = append(challenges, challenge{
+		run:   day10.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day10/input.txt",
 	})
 	return challenges
 }
