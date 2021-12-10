@@ -106,7 +106,7 @@ func hardMode(input [][]int, ch chan<- int) {
 	results := 0
 	for _, point := range lowestPoints {
 		go sizeBasin(point.x, point.y, input, visited, resultChan)
-		results += 1
+		results++
 	}
 	for ; results > 0; results-- {
 		placeAndSort(&largestBasins, <-resultChan)
