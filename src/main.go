@@ -11,6 +11,7 @@ import (
 	day08 "advent-of-code-2021/src/challenges/day08"
 	day09 "advent-of-code-2021/src/challenges/day09"
 	day10 "advent-of-code-2021/src/challenges/day10"
+	day11 "advent-of-code-2021/src/challenges/day11"
 	"fmt"
 )
 
@@ -97,6 +98,12 @@ func createChallenges() []challenge {
 		run:   day10.Go,
 		ch:    make(chan string),
 		input: "./src/challenges/day10/input.txt",
+	})
+	// Dumbo Octopus
+	challenges = append(challenges, challenge{
+		run:   day11.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day11/input.txt",
 	})
 	return challenges
 }
