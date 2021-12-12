@@ -12,6 +12,7 @@ import (
 	day09 "advent-of-code-2021/src/challenges/day09"
 	day10 "advent-of-code-2021/src/challenges/day10"
 	day11 "advent-of-code-2021/src/challenges/day11"
+	day12 "advent-of-code-2021/src/challenges/day12"
 	"fmt"
 )
 
@@ -104,6 +105,12 @@ func createChallenges() []challenge {
 		run:   day11.Go,
 		ch:    make(chan string),
 		input: "./src/challenges/day11/input.txt",
+	})
+	// Passage Pathing
+	challenges = append(challenges, challenge{
+		run:   day12.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day12/input.txt",
 	})
 	return challenges
 }
