@@ -147,6 +147,8 @@ func Go(fileName string, ch chan string) {
 	ch <- fmt.Sprintln("Passage Pathing")
 	ch <- fmt.Sprintf("  ezMode: %d\n", <-ezChan)
 	ch <- fmt.Sprintf("  hardMode: %d\n", <-hardChan)
+	// No guarantee which order ez/fast will be written
+	// to the channel /shrug
 	//ch <- fmt.Sprintf("  ezFastMode: %d\n", <-ezChan)
 	//ch <- fmt.Sprintf("  hardFastMode: %d\n", <-hardChan)
 	close(ch)
