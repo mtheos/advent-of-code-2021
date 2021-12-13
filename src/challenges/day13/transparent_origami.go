@@ -14,6 +14,17 @@ type Page struct {
 	dots       [][]bool
 }
 
+func deepCopy(input Page) Page {
+	inputCpy := Page{input.limX, input.limY, nil}
+	for _, dots := range input.dots {
+		inputCpy.dots = append(inputCpy.dots, []bool{})
+		for _, dot := range dots {
+			inputCpy.dots[len(inputCpy.dots)-1] = append(inputCpy.dots[len(inputCpy.dots)-1], dot)
+		}
+	}
+	return inputCpy
+}
+
 func readInput(fileName string) (Page, []int) {
 	file, err := os.Open(fileName)
 	MaybePanic(err)
@@ -72,22 +83,33 @@ func maybeResize(x int, y int, page *Page) {
 	}
 }
 
-func foldLeft(page Page, foldLine int) {
-}
-
-func foldUp(page Page, foldLine int) {
-	for y := 0; y < foldLine; y++ {
-		for x := 0; x < page.limX; x++ {
-			page.dots[y][x] = page.dots[y][x] || page.dots[page.limY-y-1][x]
+func foldLeft(page *Page, foldLine int) {
+	for y := 0; y < page.limY; y++ {
+		for x := 1; x <= foldLine; x++ {
+			if InBounds(foldLine+x, len(page.dots[y])) {
+				page.dots[y][foldLine-x] = page.dots[y][foldLine-x] || page.dots[y][foldLine+x]
+			}
 		}
 	}
+	page.limX = foldLine
+}
+
+func foldUp(page *Page, foldLine int) {
+	for y := 1; y <= foldLine; y++ {
+		for x := 0; x < page.limX; x++ {
+			if InBounds(foldLine+y, len(page.dots)) {
+				page.dots[foldLine-y][x] = page.dots[foldLine-y][x] || page.dots[foldLine+y][x]
+			}
+		}
+	}
+	page.limY = foldLine
 }
 
 func countDots(page Page) int {
 	count := 0
-	for _, row := range page.dots {
-		for _, dot := range row {
-			if dot {
+	for y := 0; y < page.limY; y++ {
+		for x := 0; x < page.limX; x++ {
+			if page.dots[y][x] {
 				count++
 			}
 		}
@@ -95,31 +117,55 @@ func countDots(page Page) int {
 	return count
 }
 
+func toString(page Page) string {
+	sb := strings.Builder{}
+	for y := 0; y < page.limY; y++ {
+		line := "  "
+		for x := 0; x < page.limX; x++ {
+			if page.dots[y][x] {
+				line += "O"
+			} else {
+				line += " "
+			}
+		}
+		sb.WriteString(line + "\n")
+	}
+	return sb.String()
+}
+
 func ezMode(page Page, instructions []int, ch chan<- int) {
 	for _, instruction := range instructions {
 		if instruction < 0 { // store y instructions as -ve
-			foldUp(page, -instruction)
+			foldUp(&page, -instruction)
 		} else {
-			foldLeft(page, instruction)
+			foldLeft(&page, instruction)
 		}
 	}
 	ch <- countDots(page)
 }
 
-func hardMode(page Page, instructions []int, ch chan<- int) {
-	ch <- 0
+func hardMode(page Page, instructions []int, ch chan<- string) {
+	for _, instruction := range instructions {
+		if instruction < 0 { // store y instructions as -ve
+			foldUp(&page, -instruction)
+		} else {
+			foldLeft(&page, instruction)
+		}
+	}
+	ch <- toString(page)
 }
 
 func Go(fileName string, ch chan string) {
 	page, instructions := readInput(fileName)
+	page2 := deepCopy(page)
 	ezChan := make(chan int)
-	hardChan := make(chan int)
+	hardChan := make(chan string)
 
 	go ezMode(page, instructions[:1], ezChan)
-	go hardMode(page, instructions, hardChan)
+	go hardMode(page2, instructions, hardChan)
 
 	ch <- fmt.Sprintln("Transparent Origami")
 	ch <- fmt.Sprintf("  ezMode: %d\n", <-ezChan)
-	ch <- fmt.Sprintf("  hardMode: %d\n", <-hardChan)
+	ch <- fmt.Sprintf("  hardMode: \n%s\n", <-hardChan)
 	close(ch)
 }
