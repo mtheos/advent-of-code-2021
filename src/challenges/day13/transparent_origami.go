@@ -41,7 +41,7 @@ func readInput(fileName string) (Page, []int) {
 		if line == "" {
 			break
 		}
-		split := strings.Split(scanner.Text(), ",")
+		split := strings.Split(line, ",")
 		x, err := strconv.Atoi(split[0])
 		MaybePanic(err)
 		y, err := strconv.Atoi(split[1])
