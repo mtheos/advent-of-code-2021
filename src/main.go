@@ -14,6 +14,7 @@ import (
 	day11 "advent-of-code-2021/src/challenges/day11"
 	day12 "advent-of-code-2021/src/challenges/day12"
 	day13 "advent-of-code-2021/src/challenges/day13"
+	day14 "advent-of-code-2021/src/challenges/day14"
 	"fmt"
 )
 
@@ -118,6 +119,12 @@ func createChallenges() []challenge {
 		run:   day13.Go,
 		ch:    make(chan string),
 		input: "./src/challenges/day13/input.txt",
+	})
+	// Extended Polymerization
+	challenges = append(challenges, challenge{
+		run:   day14.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day14/input.txt",
 	})
 	return challenges
 }
