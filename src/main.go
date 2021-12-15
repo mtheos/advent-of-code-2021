@@ -15,6 +15,7 @@ import (
 	day12 "advent-of-code-2021/src/challenges/day12"
 	day13 "advent-of-code-2021/src/challenges/day13"
 	day14 "advent-of-code-2021/src/challenges/day14"
+	day15 "advent-of-code-2021/src/challenges/day15"
 	"fmt"
 )
 
@@ -125,6 +126,12 @@ func createChallenges() []challenge {
 		run:   day14.Go,
 		ch:    make(chan string),
 		input: "./src/challenges/day14/input.txt",
+	})
+	// Chiton
+	challenges = append(challenges, challenge{
+		run:   day15.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day15/input.txt",
 	})
 	return challenges
 }
