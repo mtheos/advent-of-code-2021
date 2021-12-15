@@ -4,11 +4,14 @@ import (
 	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"math"
 	"os"
 	"strconv"
 	"strings"
 )
+
+type Point struct {
+	cost, x, y int
+}
 
 func readInput(fileName string) [][]int {
 	file, err := os.Open(fileName)
@@ -53,59 +56,59 @@ func theRealCave(cave [][]int) [][]int {
 	return realCave
 }
 
-func initCosts(dimY, dimX int) [][]int {
-	costs := make([][]int, dimY)
+func initVisited(dimY, dimX int) [][]bool {
+	costs := make([][]bool, dimY)
 	for i := range costs {
-		costs[i] = make([]int, dimX)
+		costs[i] = make([]bool, dimX)
 	}
-
 	for y := 0; y < dimY; y++ {
 		for x := 0; x < dimX; x++ {
-			costs[y][x] = -1
+			costs[y][x] = false
 		}
 	}
 	return costs
 }
 
-func lowestCostTo(cave [][]int, costs [][]int, x int, y int) int {
-	if costs[y][x] != -1 {
-		return costs[y][x]
-	} else if x == 0 && y == 0 {
-		return 0
-	} else if x == 0 {
-		return lowestCostTo(cave, costs, x, y-1) + cave[y][x]
-	} else if y == 0 {
-		return lowestCostTo(cave, costs, x-1, y) + cave[y][x]
+func linearTimeHeapQIChooseYou(q []Point) (Point, []Point) {
+	lowest := q[0]
+	slice := 0
+	for i, p := range q {
+		if p.cost < lowest.cost {
+			lowest = p
+			slice = i
+		}
 	}
-	return int(math.Min(float64(lowestCostTo(cave, costs, x-1, y)), float64(lowestCostTo(cave, costs, x, y-1)))) + cave[y][x]
+	return lowest, append(q[:slice], q[slice+1:]...)
 }
 
 func ezMode(cave [][]int, ch chan<- int) {
-	costs := initCosts(len(cave), len(cave[0]))
-	for y := range cave {
-		for x := range cave[y] {
-			if costs[y][x] == -1 {
-				costs[y][x] = lowestCostTo(cave, costs, x, y)
-			} else {
-				panic("interesting")
+	var stepLUT = [][2]int{
+		{-1, 0},
+		{1, 0},
+		{0, -1},
+		{0, 1},
+	}
+	visited := initVisited(len(cave), len(cave[0]))
+	q := make([]Point, 0)
+	p := Point{0, 0, 0}
+	q = append(q, p)
+	for len(q) > 0 {
+		p, q = linearTimeHeapQIChooseYou(q)
+		if p.y == len(cave)-1 && p.x == len(cave[0])-1 {
+			break
+		}
+		if visited[p.y][p.x] {
+			continue
+		}
+		visited[p.y][p.x] = true
+		for _, s := range stepLUT {
+			x, y := s[0], s[1]
+			if InBounds(p.y+y, len(cave)) && InBounds(p.x+x, len(cave[0])) {
+				q = append(q, Point{p.cost + cave[p.y+y][p.x+x], p.x + x, p.y + y})
 			}
 		}
 	}
-	ch <- costs[len(cave)-1][len(cave[0])-1]
-}
-
-func hardMode(cave [][]int, ch chan<- int) {
-	costs := initCosts(len(cave), len(cave[0]))
-	for y := range cave {
-		for x := range cave[y] {
-			if costs[y][x] == -1 {
-				costs[y][x] = lowestCostTo(cave, costs, x, y)
-			} else {
-				panic("interesting")
-			}
-		}
-	}
-	ch <- costs[len(cave)-1][len(cave[0])-1]
+	ch <- p.cost
 }
 
 func Go(fileName string, ch chan string) {
@@ -115,7 +118,7 @@ func Go(fileName string, ch chan string) {
 	hardChan := make(chan int)
 
 	go ezMode(cave, ezChan)
-	go hardMode(realCave, hardChan)
+	go ezMode(realCave, hardChan)
 
 	ch <- fmt.Sprintln("Chiton")
 	ch <- fmt.Sprintf("  ezMode: %d\n", <-ezChan)
