@@ -4,34 +4,27 @@ import (
 	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
 
-type Point struct {
+type point struct {
 	cost, x, y int
 }
 
 func readInput(fileName string) [][]int {
-	file, err := os.Open(fileName)
-	MaybePanic(err)
-	defer func(file *os.File) {
-		err := file.Close()
-		MaybePanic(err)
-	}(file)
-
-	scanner := bufio.NewScanner(file)
 	var arr [][]int
-	for scanner.Scan() {
-		split := strings.Split(scanner.Text(), "")
-		arr = append(arr, []int{})
-		for _, s := range split {
-			v, err := strconv.Atoi(s)
-			MaybePanic(err)
-			arr[len(arr)-1] = append(arr[len(arr)-1], v)
+	ReadInput(fileName, func(scanner *bufio.Scanner) {
+		for scanner.Scan() {
+			split := strings.Split(scanner.Text(), "")
+			arr = append(arr, []int{})
+			for _, s := range split {
+				v, err := strconv.Atoi(s)
+				MaybePanic(err)
+				arr[len(arr)-1] = append(arr[len(arr)-1], v)
+			}
 		}
-	}
+	})
 	return arr
 }
 
@@ -69,7 +62,7 @@ func initVisited(dimY, dimX int) [][]bool {
 	return costs
 }
 
-func linearTimeHeapQIChooseYou(q []Point) (Point, []Point) {
+func linearTimeHeapQIChooseYou(q []point) (point, []point) {
 	lowest := q[0]
 	slice := 0
 	for i, p := range q {
@@ -89,8 +82,8 @@ func ezMode(cave [][]int, ch chan<- int) {
 		{0, 1},
 	}
 	visited := initVisited(len(cave), len(cave[0]))
-	q := make([]Point, 0)
-	p := Point{0, 0, 0}
+	q := make([]point, 0)
+	p := point{0, 0, 0}
 	q = append(q, p)
 	for len(q) > 0 {
 		p, q = linearTimeHeapQIChooseYou(q)
@@ -104,7 +97,7 @@ func ezMode(cave [][]int, ch chan<- int) {
 		for _, s := range stepLUT {
 			x, y := s[0], s[1]
 			if InBounds(p.y+y, len(cave)) && InBounds(p.x+x, len(cave[0])) {
-				q = append(q, Point{p.cost + cave[p.y+y][p.x+x], p.x + x, p.y + y})
+				q = append(q, point{p.cost + cave[p.y+y][p.x+x], p.x + x, p.y + y})
 			}
 		}
 	}

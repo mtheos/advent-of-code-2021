@@ -134,7 +134,7 @@ func createChallenges() []challenge {
 		ch:    make(chan string),
 		input: "./src/challenges/day15/input.txt",
 	})
-	// Packet Decoder
+	// packet Decoder
 	challenges = append(challenges, challenge{
 		run:   day16.Go,
 		ch:    make(chan string),

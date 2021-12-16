@@ -1,9 +1,9 @@
 package dive
 
 import (
+	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -39,28 +39,18 @@ func mapDirection(direction byte) byte {
 }
 
 func readInput(fileName string) []movement {
-	file, err := os.Open(fileName)
-	if err != nil {
-		panic(err)
-	}
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(file)
-
 	var arr []movement
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		words := strings.Fields(scanner.Text())
-		direction := mapDirection(words[0][0])
-		num, err := strconv.Atoi(words[1])
-		if err != nil {
-			panic(err)
+	ReadInput(fileName, func(scanner *bufio.Scanner) {
+		for scanner.Scan() {
+			words := strings.Fields(scanner.Text())
+			direction := mapDirection(words[0][0])
+			num, err := strconv.Atoi(words[1])
+			if err != nil {
+				panic(err)
+			}
+			arr = append(arr, movement{direction: direction, steps: num})
 		}
-		arr = append(arr, movement{direction: direction, steps: num})
-	}
+	})
 	return arr
 }
 

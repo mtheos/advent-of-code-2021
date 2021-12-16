@@ -4,73 +4,66 @@ import (
 	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
 
-type Seafloor [][]int
-type Line struct {
-	start, end Point
+type seafloor [][]int
+type line struct {
+	start, end point
 }
-type Point struct {
+type point struct {
 	x, y int
 }
 
-func readInput(fileName string) []Line {
-	file, err := os.Open(fileName)
-	MaybePanic(err)
-	defer func(file *os.File) {
-		err := file.Close()
-		MaybePanic(err)
-	}(file)
-
-	scanner := bufio.NewScanner(file)
-	var arr []Line
-	for scanner.Scan() {
-		line := scanner.Text()
-		split := strings.Split(line, " -> ")
-		start := parsePoint(split[0])
-		end := parsePoint(split[1])
-		arr = append(arr, Line{start, end})
-	}
+func readInput(fileName string) []line {
+	var arr []line
+	ReadInput(fileName, func(scanner *bufio.Scanner) {
+		for scanner.Scan() {
+			in := scanner.Text()
+			split := strings.Split(in, " -> ")
+			start := parsePoint(split[0])
+			end := parsePoint(split[1])
+			arr = append(arr, line{start, end})
+		}
+	})
 	return arr
 }
 
-func parsePoint(input string) Point {
+func parsePoint(input string) point {
 	split := strings.Split(input, ",")
 	x, err := strconv.Atoi(split[0])
 	MaybePanic(err)
 	y, err := strconv.Atoi(split[1])
 	MaybePanic(err)
-	return Point{x, y}
+	return point{x, y}
 }
 
-func removeDiagonalLines(lines []Line) []Line {
-	var notDiag []Line
-	for _, line := range lines {
-		if line.start.x == line.end.x || line.start.y == line.end.y {
-			notDiag = append(notDiag, line)
+func removeDiagonalLines(lines []line) []line {
+	var notDiag []line
+	for _, l := range lines {
+		if l.start.x == l.end.x || l.start.y == l.end.y {
+			notDiag = append(notDiag, l)
 		}
 	}
 	return notDiag
 }
 
-func getDims(lines []Line) (int, int) {
+func getDims(lines []line) (int, int) {
 	var maxX, maxY int
 	// Get dims, our space is from (0,0) -> (n,m)
-	for _, line := range lines {
-		if line.start.x > maxX {
-			maxX = line.start.x
+	for _, l := range lines {
+		if l.start.x > maxX {
+			maxX = l.start.x
 		}
-		if line.start.y > maxY {
-			maxY = line.start.y
+		if l.start.y > maxY {
+			maxY = l.start.y
 		}
-		if line.end.x > maxX {
-			maxX = line.end.x
+		if l.end.x > maxX {
+			maxX = l.end.x
 		}
-		if line.end.y > maxY {
-			maxY = line.end.y
+		if l.end.y > maxY {
+			maxY = l.end.y
 		}
 	}
 	// zero index
@@ -79,15 +72,15 @@ func getDims(lines []Line) (int, int) {
 	return maxX, maxY
 }
 
-func createSeafloor(maxX, maxY int) Seafloor {
-	seafloor := make(Seafloor, maxX)
-	for i := 0; i < len(seafloor); i++ {
-		seafloor[i] = make([]int, maxY)
+func createSeafloor(maxX, maxY int) seafloor {
+	floor := make(seafloor, maxX)
+	for i := 0; i < len(floor); i++ {
+		floor[i] = make([]int, maxY)
 	}
-	return seafloor
+	return floor
 }
 
-func orderPointsIncreasing(start Point, end Point) (Point, Point) {
+func orderPointsIncreasing(start point, end point) (point, point) {
 	if start.y == end.y && start.x > end.x {
 		return end, start // vertical
 	}
@@ -100,16 +93,16 @@ func orderPointsIncreasing(start Point, end Point) (Point, Point) {
 	return start, end
 }
 
-func gradient(start Point, end Point) int {
+func gradient(start point, end point) int {
 	if start.x == end.x || start.y == end.y {
 		return -1 // vertical and horizontal lines are treated as -ve
 	}
 	return (end.y - start.y) / (end.x - start.x)
 }
 
-func countDangerous(seafloor Seafloor) int {
+func countDangerous(floor seafloor) int {
 	var count int
-	for _, row := range seafloor {
+	for _, row := range floor {
 		for _, point := range row {
 			if point > 1 {
 				count++
@@ -119,8 +112,8 @@ func countDangerous(seafloor Seafloor) int {
 	return count
 }
 
-func plotLine(line Line, seafloor Seafloor) {
-	start, end := orderPointsIncreasing(line.start, line.end)
+func plotLine(l line, floor seafloor) {
+	start, end := orderPointsIncreasing(l.start, l.end)
 	gradient := gradient(start, end)
 	vx, vy := start.x, start.y
 	var dy int
@@ -130,7 +123,7 @@ func plotLine(line Line, seafloor Seafloor) {
 		dy = -1
 	}
 	for true {
-		seafloor[vx][vy] += 1
+		floor[vx][vy] += 1
 		if vx == end.x && vy == end.y {
 			break
 		}
@@ -143,11 +136,11 @@ func plotLine(line Line, seafloor Seafloor) {
 	}
 }
 
-func ezMode(input []Line, seafloor Seafloor, ch chan<- int) {
-	for _, line := range input {
-		plotLine(line, seafloor)
+func ezMode(input []line, floor seafloor, ch chan<- int) {
+	for _, l := range input {
+		plotLine(l, floor)
 	}
-	ch <- countDangerous(seafloor)
+	ch <- countDangerous(floor)
 }
 
 func Go(fileName string, ch chan string) {

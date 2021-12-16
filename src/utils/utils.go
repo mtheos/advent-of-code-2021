@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"bufio"
+	"os"
 	"sort"
 	"strings"
 )
@@ -27,4 +29,18 @@ func StrCat(stringsArr ...string) string {
 
 func InBounds(i int, length int) bool {
 	return i >= 0 && i < length
+}
+
+type Reader func(scanner *bufio.Scanner)
+
+func ReadInput(fileName string, read Reader) {
+	file, err := os.Open(fileName)
+	MaybePanic(err)
+	defer func(file *os.File) {
+		err := file.Close()
+		MaybePanic(err)
+	}(file)
+
+	scanner := bufio.NewScanner(file)
+	read(scanner)
 }

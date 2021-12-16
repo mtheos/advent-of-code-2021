@@ -5,32 +5,24 @@ import (
 	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"os"
 	"strings"
 	"time"
 	"unicode"
 )
 
 func readInput(fileName string) graph.Graph {
-	file, err := os.Open(fileName)
-	MaybePanic(err)
-	defer func(file *os.File) {
-		err := file.Close()
-		MaybePanic(err)
-	}(file)
-
-	scanner := bufio.NewScanner(file)
 	g := graph.ArrayGraph{}
-	for scanner.Scan() {
-		split := strings.Split(scanner.Text(), "-")
-		from, to := split[0], split[1]
-		g.MaybeCreate(from)
-		g.MaybeCreate(to)
-		g.Connect(from, to, true)
-	}
+	ReadInput(fileName, func(scanner *bufio.Scanner) {
+		for scanner.Scan() {
+			split := strings.Split(scanner.Text(), "-")
+			from, to := split[0], split[1]
+			g.MaybeCreate(from)
+			g.MaybeCreate(to)
+			g.Connect(from, to, true)
+		}
+	})
 	return &g
 }
-
 func alwaysVisitable(s string) bool {
 	for _, r := range s {
 		if !unicode.IsUpper(r) && unicode.IsLetter(r) {

@@ -13,10 +13,10 @@ const (
 	EQ      = 7
 )
 
-var ops map[int]func([]Packet) uint64
+var ops map[int]func([]packet) uint64
 
 func init() {
-	ops = map[int]func([]Packet) uint64{
+	ops = map[int]func([]packet) uint64{
 		SUM:     sumOp,
 		PRODUCT: productOp,
 		MIN:     minOp,
@@ -28,7 +28,7 @@ func init() {
 	}
 }
 
-func eval(p Packet) uint64 {
+func eval(p packet) uint64 {
 	switch p.typeId {
 	case LITERAL:
 		return p.literal
@@ -39,7 +39,7 @@ func eval(p Packet) uint64 {
 
 // SUM - their value is the sum of the values of their sub-packets.
 // If they only have a single sub-packet, their value is the value of the sub-packet.
-func sumOp(packets []Packet) uint64 {
+func sumOp(packets []packet) uint64 {
 	var acc uint64
 	for _, p := range packets {
 		acc += eval(p)
@@ -49,7 +49,7 @@ func sumOp(packets []Packet) uint64 {
 
 // PRODUCT - their value is the result of multiplying together the values of their sub-packets.
 // If they only have a single sub-packet, their value is the value of the sub-packet.
-func productOp(packets []Packet) uint64 {
+func productOp(packets []packet) uint64 {
 	var acc uint64 = 1
 	for _, p := range packets {
 		acc *= eval(p)
@@ -58,7 +58,7 @@ func productOp(packets []Packet) uint64 {
 }
 
 // MIN - their value is the minimum of the values of their sub-packets.
-func minOp(packets []Packet) uint64 {
+func minOp(packets []packet) uint64 {
 	var acc uint64 = math.MaxUint64
 	for _, p := range packets {
 		acc = uint64(math.Min(float64(acc), float64(eval(p))))
@@ -67,7 +67,7 @@ func minOp(packets []Packet) uint64 {
 }
 
 // MAX - their value is the maximum of the values of their sub-packets.
-func maxOp(packets []Packet) uint64 {
+func maxOp(packets []packet) uint64 {
 	var acc uint64
 	for _, p := range packets {
 		acc = uint64(math.Max(float64(acc), float64(eval(p))))
@@ -76,14 +76,14 @@ func maxOp(packets []Packet) uint64 {
 }
 
 // LITERAL - represents a literal value, not an operation.
-func panicOp([]Packet) uint64 {
+func panicOp([]packet) uint64 {
 	panic("I should not be called")
 }
 
 // GT - their value is 1 if the value of the first sub-packet is greater than
 // the value of the second sub-packet; otherwise, their value is 0.
 // These packets always have exactly two sub-packets.
-func gtOp(packets []Packet) uint64 {
+func gtOp(packets []packet) uint64 {
 	first, second := eval(packets[0]), eval(packets[1])
 	if first > second {
 		return 1
@@ -94,7 +94,7 @@ func gtOp(packets []Packet) uint64 {
 // LT - their value is 1 if the value of the first sub-packet is less than
 // the value of the second sub-packet; otherwise, their value is 0.
 // These packets always have exactly two sub-packets.
-func ltOp(packets []Packet) uint64 {
+func ltOp(packets []packet) uint64 {
 	first, second := eval(packets[0]), eval(packets[1])
 	if first < second {
 		return 1
@@ -105,7 +105,7 @@ func ltOp(packets []Packet) uint64 {
 // EQ - their value is 1 if the value of the first sub-packet is equal to
 // the value of the second sub-packet; otherwise, their value is 0.
 // These packets always have exactly two sub-packets.
-func eqOp(packets []Packet) uint64 {
+func eqOp(packets []packet) uint64 {
 	first, second := eval(packets[0]), eval(packets[1])
 	if first == second {
 		return 1

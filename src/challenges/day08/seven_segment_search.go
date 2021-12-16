@@ -4,11 +4,10 @@ import (
 	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"os"
 	"strings"
 )
 
-type Display struct {
+type display struct {
 	inputs  [10]string
 	outputs [4]string
 }
@@ -36,30 +35,24 @@ var segmentCountLUT = []int{
 	9: 6,
 }
 
-func readInput(fileName string) []Display {
-	file, err := os.Open(fileName)
-	MaybePanic(err)
-	defer func(file *os.File) {
-		err := file.Close()
-		MaybePanic(err)
-	}(file)
-
-	scanner := bufio.NewScanner(file)
-	var arr []Display
-	for scanner.Scan() {
-		line := scanner.Text()
-		split := strings.Split(line, " | ")
-		inputs := split[0]
-		var display Display
-		for i, in := range strings.Split(inputs, " ") {
-			display.inputs[i] = in
+func readInput(fileName string) []display {
+	var arr []display
+	ReadInput(fileName, func(scanner *bufio.Scanner) {
+		for scanner.Scan() {
+			line := scanner.Text()
+			split := strings.Split(line, " | ")
+			inputs := split[0]
+			var segmentDisplay display
+			for i, in := range strings.Split(inputs, " ") {
+				segmentDisplay.inputs[i] = in
+			}
+			outputs := split[1]
+			for i, out := range strings.Split(outputs, " ") {
+				segmentDisplay.outputs[i] = out
+			}
+			arr = append(arr, segmentDisplay)
 		}
-		outputs := split[1]
-		for i, out := range strings.Split(outputs, " ") {
-			display.outputs[i] = out
-		}
-		arr = append(arr, display)
-	}
+	})
 	return arr
 }
 
@@ -125,9 +118,9 @@ func parseInput(inputs [10]string) ([4]string, [3]string, [3]string) {
  6666    6666    6666
 */
 
-func solveIt(display Display, resultChan chan int) {
+func solveIt(segmentDisplay display, resultChan chan int) {
 	var segments [7]string
-	known, length5, length6 := parseInput(display.inputs)
+	known, length5, length6 := parseInput(segmentDisplay.inputs)
 	one, four, seven, eight := known[0], known[1], known[2], known[3]
 
 	fillSegmentZero(seven, one, &segments)
@@ -137,7 +130,7 @@ func solveIt(display Display, resultChan chan int) {
 	LUT := createLUT(segments)
 	result := 0
 	multiplier := 1000
-	for _, digit := range display.outputs {
+	for _, digit := range segmentDisplay.outputs {
 		result += LUT[StrSort(digit)] * multiplier
 		multiplier /= 10
 	}
@@ -224,10 +217,10 @@ func fillSegmentSix(eight string, segments *[7]string) {
 	}
 }
 
-func ezMode(input []Display, ch chan<- int) {
+func ezMode(input []display, ch chan<- int) {
 	count := 0
-	for _, display := range input {
-		for _, output := range display.outputs {
+	for _, segmentDisplay := range input {
+		for _, output := range segmentDisplay.outputs {
 			switch len(output) {
 			case segmentCountLUT[1]:
 				fallthrough
@@ -244,10 +237,10 @@ func ezMode(input []Display, ch chan<- int) {
 	ch <- count
 }
 
-func hardMode(input []Display, ch chan<- int) {
+func hardMode(input []display, ch chan<- int) {
 	resultChan := make(chan int)
-	for _, display := range input {
-		go solveIt(display, resultChan)
+	for _, segmentDisplay := range input {
+		go solveIt(segmentDisplay, resultChan)
 	}
 	sum := 0
 	for i := 0; i < len(input); i++ {

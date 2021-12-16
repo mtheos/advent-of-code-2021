@@ -6,7 +6,6 @@ import (
 	"fmt"
 	lls "github.com/emirpasic/gods/stacks/linkedliststack"
 	"math"
-	"os"
 	"sort"
 )
 
@@ -25,19 +24,13 @@ var autoCompleteScoring = map[rune]int{
 }
 
 func readInput(fileName string) []string {
-	file, err := os.Open(fileName)
-	MaybePanic(err)
-	defer func(file *os.File) {
-		err := file.Close()
-		MaybePanic(err)
-	}(file)
-
-	scanner := bufio.NewScanner(file)
 	var arr []string
-	for scanner.Scan() {
-		line := scanner.Text()
-		arr = append(arr, line)
-	}
+	ReadInput(fileName, func(scanner *bufio.Scanner) {
+		for scanner.Scan() {
+			line := scanner.Text()
+			arr = append(arr, line)
+		}
+	})
 	return arr
 }
 

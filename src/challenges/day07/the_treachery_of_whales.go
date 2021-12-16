@@ -5,30 +5,23 @@ import (
 	"bufio"
 	"fmt"
 	"math"
-	"os"
 	"sort"
 	"strconv"
 	"strings"
 )
 
 func readInput(fileName string) []int {
-	file, err := os.Open(fileName)
-	MaybePanic(err)
-	defer func(file *os.File) {
-		err := file.Close()
-		MaybePanic(err)
-	}(file)
-
-	scanner := bufio.NewScanner(file)
 	var arr []int
-	scanner.Scan()
-	line := scanner.Text()
-	split := strings.Split(line, ",")
-	for _, crabs := range split {
-		age, err := strconv.Atoi(crabs)
-		MaybePanic(err)
-		arr = append(arr, age)
-	}
+	ReadInput(fileName, func(scanner *bufio.Scanner) {
+		scanner.Scan()
+		line := scanner.Text()
+		split := strings.Split(line, ",")
+		for _, crabs := range split {
+			age, err := strconv.Atoi(crabs)
+			MaybePanic(err)
+			arr = append(arr, age)
+		}
+	})
 	return arr
 }
 

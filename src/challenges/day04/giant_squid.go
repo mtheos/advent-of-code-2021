@@ -1,24 +1,24 @@
 package giantSquid
 
 import (
+	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 	"sync"
 )
 
-type Board []Row
-type Row []int
+type board []row
+type row []int
 
-func deepCopy(boards []Board) []Board {
-	var boardsCpy []Board
-	for _, board := range boards {
-		boardCpy := make(Board, 5)
-		for i, row := range board {
-			boardCpy[i] = make(Row, 5)
-			for k, val := range row {
+func deepCopy(boards []board) []board {
+	var boardsCpy []board
+	for _, gameBoard := range boards {
+		boardCpy := make(board, 5)
+		for i, gameRow := range gameBoard {
+			boardCpy[i] = make(row, 5)
+			for k, val := range gameRow {
 				boardCpy[i][k] = val
 			}
 		}
@@ -28,25 +28,15 @@ func deepCopy(boards []Board) []Board {
 }
 
 func readInput(fileName string) []string {
-	file, err := os.Open(fileName)
-	if err != nil {
-		panic(err)
-	}
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(file)
-
-	scanner := bufio.NewScanner(file)
 	var arr []string
-	for scanner.Scan() {
-		line := scanner.Text()
-		if len(line) > 0 { // drop empty lines
-			arr = append(arr, strings.TrimSpace(line))
+	ReadInput(fileName, func(scanner *bufio.Scanner) {
+		for scanner.Scan() {
+			line := scanner.Text()
+			if len(line) > 0 { // drop empty lines
+				arr = append(arr, strings.TrimSpace(line))
+			}
 		}
-	}
+	})
 	return arr
 }
 
@@ -63,12 +53,12 @@ func parseMoves(input string) []int {
 	return moves
 }
 
-func parseBoards(input []string) []Board {
-	var boards []Board
+func parseBoards(input []string) []board {
+	var boards []board
 	for i := 0; i < len(input); i += 5 {
-		board := make(Board, 5)
+		gameBoard := make(board, 5)
 		for j := 0; j < 5; j++ {
-			board[j] = make(Row, 5)
+			gameBoard[j] = make(row, 5)
 			clean := strings.ReplaceAll(input[i+j], "  ", " ")
 			split := strings.Split(clean, " ")
 			for k, val := range split {
@@ -76,17 +66,17 @@ func parseBoards(input []string) []Board {
 				if err != nil {
 					panic(err)
 				}
-				board[j][k] = conv
+				gameBoard[j][k] = conv
 			}
 		}
-		boards = append(boards, board)
+		boards = append(boards, gameBoard)
 	}
 	return boards
 }
 
-func isRowWon(row Row, ch chan bool, wg *sync.WaitGroup) {
+func isRowWon(gameRow row, ch chan bool, wg *sync.WaitGroup) {
 	defer wg.Done()
-	for _, cell := range row {
+	for _, cell := range gameRow {
 		if cell != -1 {
 			ch <- false
 			return
@@ -95,10 +85,10 @@ func isRowWon(row Row, ch chan bool, wg *sync.WaitGroup) {
 	ch <- true
 }
 
-func isColWon(board Board, col int, ch chan bool, wg *sync.WaitGroup) {
+func isColWon(gameBoard board, col int, ch chan bool, wg *sync.WaitGroup) {
 	defer wg.Done()
-	for row := 0; row < 5; row++ {
-		if board[row][col] != -1 {
+	for gameRow := 0; gameRow < 5; gameRow++ {
+		if gameBoard[gameRow][col] != -1 {
 			ch <- false
 			return
 		}
@@ -106,17 +96,17 @@ func isColWon(board Board, col int, ch chan bool, wg *sync.WaitGroup) {
 	ch <- true
 }
 
-func isWon(board Board) bool {
+func isWon(gameBoard board) bool {
 	ch := make(chan bool, 10)
 	var wg sync.WaitGroup
 
-	for _, row := range board {
+	for _, gameRow := range gameBoard {
 		wg.Add(1)
-		go isRowWon(row, ch, &wg)
+		go isRowWon(gameRow, ch, &wg)
 	}
 	for i := 0; i < 5; i++ {
 		wg.Add(1)
-		go isColWon(board, i, ch, &wg)
+		go isColWon(gameBoard, i, ch, &wg)
 	}
 
 	wg.Wait()
@@ -129,29 +119,29 @@ func isWon(board Board) bool {
 	return false
 }
 
-func playRow(move int, row Row, wg *sync.WaitGroup) {
+func playRow(move int, gameRow row, wg *sync.WaitGroup) {
 	defer wg.Done()
-	for i, cell := range row {
+	for i, cell := range gameRow {
 		if cell == move {
-			row[i] = -1
+			gameRow[i] = -1
 		}
 	}
 }
 
-func playBoard(move int, board Board) bool {
+func playBoard(move int, gameBoard board) bool {
 	var wg sync.WaitGroup
-	for _, row := range board {
+	for _, gameRow := range gameBoard {
 		wg.Add(1)
-		go playRow(move, row, &wg)
+		go playRow(move, gameRow, &wg)
 	}
 	wg.Wait()
-	return isWon(board)
+	return isWon(gameBoard)
 }
 
-func scoreBoard(lastMove int, board Board) int {
+func scoreBoard(lastMove int, gameBoard board) int {
 	var sum int
-	for _, row := range board {
-		for _, cell := range row {
+	for _, gameRow := range gameBoard {
+		for _, cell := range gameRow {
 			if cell != -1 {
 				sum += cell
 			}
@@ -160,15 +150,15 @@ func scoreBoard(lastMove int, board Board) int {
 	return lastMove * sum
 }
 
-func ezMode(moves []int, boards []Board, ch chan<- int) {
+func ezMode(moves []int, boards []board, ch chan<- int) {
 	var lastMove int
-	var winningBoard Board
+	var winningBoard board
 out:
 	for _, move := range moves {
-		for _, board := range boards {
-			isWinner := playBoard(move, board)
+		for _, gameBoard := range boards {
+			isWinner := playBoard(move, gameBoard)
 			if isWinner {
-				lastMove, winningBoard = move, board
+				lastMove, winningBoard = move, gameBoard
 				break out
 			}
 		}
@@ -176,15 +166,15 @@ out:
 	ch <- scoreBoard(lastMove, winningBoard)
 }
 
-func hardMode(moves []int, boards []Board, ch chan<- int) {
+func hardMode(moves []int, boards []board, ch chan<- int) {
 	var lastMove int
-	var lastWinner Board
+	var lastWinner board
 	for _, move := range moves {
 		for i := 0; i < len(boards); i++ {
-			board := boards[i]
-			isWinner := playBoard(move, board)
+			gameBoard := boards[i]
+			isWinner := playBoard(move, gameBoard)
 			if isWinner {
-				lastMove, lastWinner = move, board
+				lastMove, lastWinner = move, gameBoard
 				boards = append(boards[:i], boards[i+1:]...)
 				i--
 			}

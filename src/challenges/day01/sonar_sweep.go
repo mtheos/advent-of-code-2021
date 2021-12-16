@@ -4,26 +4,19 @@ import (
 	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"os"
 	"strconv"
 )
 
 func readInput(fileName string) []int {
-	file, err := os.Open(fileName)
-	MaybePanic(err)
-	defer func(file *os.File) {
-		err := file.Close()
-		MaybePanic(err)
-	}(file)
-
 	var arr []int
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		num, err := strconv.Atoi(line)
-		MaybePanic(err)
-		arr = append(arr, num)
-	}
+	ReadInput(fileName, func(scanner *bufio.Scanner) {
+		for scanner.Scan() {
+			line := scanner.Text()
+			num, err := strconv.Atoi(line)
+			MaybePanic(err)
+			arr = append(arr, num)
+		}
+	})
 	return arr
 }
 

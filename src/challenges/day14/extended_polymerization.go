@@ -5,30 +5,24 @@ import (
 	"bufio"
 	"fmt"
 	"math"
-	"os"
 	"strings"
 )
 
 func readInput(fileName string) (string, map[uint16]uint8) {
-	file, err := os.Open(fileName)
-	MaybePanic(err)
-	defer func(file *os.File) {
-		err := file.Close()
-		MaybePanic(err)
-	}(file)
-
-	scanner := bufio.NewScanner(file)
-	scanner.Scan()
-	polymer := scanner.Text()
+	var polymer string
 	transformations := make(map[uint16]uint8)
-	scanner.Scan()
-	scanner.Text() // blank line
-	for scanner.Scan() {
-		split := strings.Split(scanner.Text(), " -> ")
-		// This is as obtuse as I could be while being reasonable
-		pair := uint16(split[0][0])<<8 + uint16(split[0][1])
-		transformations[pair] = split[1][0]
-	}
+	ReadInput(fileName, func(scanner *bufio.Scanner) {
+		scanner.Scan()
+		polymer = scanner.Text()
+		scanner.Scan()
+		scanner.Text() // blank line
+		for scanner.Scan() {
+			split := strings.Split(scanner.Text(), " -> ")
+			// This is as obtuse as I could be while being reasonable
+			pair := uint16(split[0][0])<<8 + uint16(split[0][1])
+			transformations[pair] = split[1][0]
+		}
+	})
 	return polymer, transformations
 }
 

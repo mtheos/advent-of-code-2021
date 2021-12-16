@@ -4,40 +4,29 @@ import (
 	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
 
-type Point struct {
-	cost, x, y int
-}
-
-func readInput(fileName string) []Packet {
-	file, err := os.Open(fileName)
-	MaybePanic(err)
-	defer func(file *os.File) {
-		err := file.Close()
-		MaybePanic(err)
-	}(file)
-
-	scanner := bufio.NewScanner(file)
-	scanner.Scan()
-	hex := scanner.Text()
-	binary := hex2bin(hex)
-	return parse(&binary, -1)
-}
-
-type PacketFunc func([]Packet) uint64
-
-type Packet struct {
+type packet struct {
 	version, typeId int
 	literal         uint64
-	packets         []Packet
+	packets         []packet
 }
 
-func parse(binary *string, subPacketCount int) []Packet {
-	var packets []Packet
+func readInput(fileName string) packet {
+	var packets []packet
+	ReadInput(fileName, func(scanner *bufio.Scanner) {
+		scanner.Scan()
+		hex := scanner.Text()
+		binary := hex2bin(hex)
+		packets = parse(&binary, -1)
+	})
+	return packets[0]
+}
+
+func parse(binary *string, subPacketCount int) []packet {
+	var packets []packet
 	for {
 		if subPacketCount != -1 {
 			subPacketCount--
@@ -49,14 +38,14 @@ func parse(binary *string, subPacketCount int) []Packet {
 		version := bin2Int((*binary)[:3], 3)
 		typeId := bin2Int((*binary)[3:6], 3)
 		*binary = (*binary)[6:]
-		var packet Packet
+		var p packet
 		switch typeId {
 		case LITERAL:
-			packet = parseLiteralPacket(int(version), int(typeId), binary)
+			p = parseLiteralPacket(int(version), int(typeId), binary)
 		default:
-			packet = parseOperatorPacket(int(version), int(typeId), binary)
+			p = parseOperatorPacket(int(version), int(typeId), binary)
 		}
-		packets = append(packets, packet)
+		packets = append(packets, p)
 		if subPacketCount == 0 {
 			break
 		}
@@ -64,8 +53,8 @@ func parse(binary *string, subPacketCount int) []Packet {
 	return packets
 }
 
-func parseOperatorPacket(version int, typeId int, binary *string) Packet {
-	var packets []Packet
+func parseOperatorPacket(version int, typeId int, binary *string) packet {
+	var packets []packet
 	lengthTypeId := (*binary)[0]
 	*binary = (*binary)[1:]
 	if lengthTypeId == '0' {
@@ -79,10 +68,10 @@ func parseOperatorPacket(version int, typeId int, binary *string) Packet {
 		*binary = (*binary)[11:]
 		packets = append(packets, parse(binary, int(numPackets))...)
 	}
-	return Packet{version, typeId, 0, packets}
+	return packet{version, typeId, 0, packets}
 }
 
-func parseLiteralPacket(version int, typeId int, binary *string) Packet {
+func parseLiteralPacket(version int, typeId int, binary *string) packet {
 	literalBits := ""
 	for {
 		sign, chunk := (*binary)[0], (*binary)[1:5]
@@ -93,7 +82,7 @@ func parseLiteralPacket(version int, typeId int, binary *string) Packet {
 		}
 	}
 	literal := bin2Int(literalBits, len(literalBits))
-	return Packet{version, typeId, literal, nil}
+	return packet{version, typeId, literal, nil}
 }
 
 func hex2bin(raw string) string {
@@ -122,7 +111,7 @@ func bin2Int(s string, size int) uint64 {
 	return i
 }
 
-func sumVersions(packets []Packet) int {
+func sumVersions(packets []packet) int {
 	var sum int
 	for _, p := range packets {
 		switch p.typeId {
@@ -135,23 +124,23 @@ func sumVersions(packets []Packet) int {
 	return sum
 }
 
-func ezMode(packets []Packet, ch chan<- int) {
-	ch <- sumVersions(packets)
+func ezMode(p packet, ch chan<- int) {
+	ch <- sumVersions([]packet{p})
 }
 
-func hardMode(packets []Packet, ch chan<- uint64) {
-	ch <- eval(packets[0])
+func hardMode(p packet, ch chan<- uint64) {
+	ch <- eval(p)
 }
 
 func Go(fileName string, ch chan string) {
-	packets := readInput(fileName)
+	p := readInput(fileName)
 	ezChan := make(chan int)
 	hardChan := make(chan uint64)
 
-	go ezMode(packets, ezChan)
-	go hardMode(packets, hardChan)
+	go ezMode(p, ezChan)
+	go hardMode(p, hardChan)
 
-	ch <- fmt.Sprintln("Packet Decoder")
+	ch <- fmt.Sprintln("packet Decoder")
 	ch <- fmt.Sprintf("  ezMode: %d\n", <-ezChan)
 	ch <- fmt.Sprintf("  hardMode: %d\n", <-hardChan)
 	close(ch)
