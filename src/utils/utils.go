@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -29,6 +30,12 @@ func StrCat(stringsArr ...string) string {
 
 func InBounds(i int, length int) bool {
 	return i >= 0 && i < length
+}
+
+func Atoi(s string) int {
+	i, err := strconv.Atoi(s)
+	MaybePanic(err)
+	return i
 }
 
 type Reader func(scanner *bufio.Scanner)

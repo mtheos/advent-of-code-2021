@@ -4,7 +4,6 @@ import (
 	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"strconv"
 	"strings"
 	"sync"
 )
@@ -44,10 +43,7 @@ func parseMoves(input string) []int {
 	split := strings.Split(input, ",")
 	moves := make([]int, len(split))
 	for i, val := range split {
-		conv, err := strconv.Atoi(val)
-		if err != nil {
-			panic(err)
-		}
+		conv := Atoi(val)
 		moves[i] = conv
 	}
 	return moves
@@ -62,10 +58,7 @@ func parseBoards(input []string) []board {
 			clean := strings.ReplaceAll(input[i+j], "  ", " ")
 			split := strings.Split(clean, " ")
 			for k, val := range split {
-				conv, err := strconv.Atoi(val)
-				if err != nil {
-					panic(err)
-				}
+				conv := Atoi(val)
 				gameBoard[j][k] = conv
 			}
 		}

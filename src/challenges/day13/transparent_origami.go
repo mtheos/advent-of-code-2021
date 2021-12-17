@@ -4,7 +4,6 @@ import (
 	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -23,18 +22,15 @@ func readInput(fileName string) (page, []int) {
 				break
 			}
 			split := strings.Split(line, ",")
-			x, err := strconv.Atoi(split[0])
-			MaybePanic(err)
-			y, err := strconv.Atoi(split[1])
-			MaybePanic(err)
+			x := Atoi(split[0])
+			y := Atoi(split[1])
 			maybeResize(x, y, &p)
 			p.dots[y][x] = true
 		}
 		for scanner.Scan() {
 			line := scanner.Text()[len("fold along "):]
 			split := strings.Split(line, "=")
-			z, err := strconv.Atoi(split[1])
-			MaybePanic(err)
+			z := Atoi(split[1])
 			if split[0] == "y" {
 				z = -z
 			}

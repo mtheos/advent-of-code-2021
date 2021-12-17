@@ -4,7 +4,6 @@ import (
 	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -15,8 +14,7 @@ func readInput(fileName string) []int {
 		line := scanner.Text()
 		split := strings.Split(line, ",")
 		for _, fishy := range split {
-			age, err := strconv.Atoi(fishy)
-			MaybePanic(err)
+			age := Atoi(fishy)
 			arr = append(arr, age)
 		}
 	})

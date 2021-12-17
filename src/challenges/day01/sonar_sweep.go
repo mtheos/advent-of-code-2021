@@ -4,7 +4,6 @@ import (
 	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"strconv"
 )
 
 func readInput(fileName string) []int {
@@ -12,8 +11,7 @@ func readInput(fileName string) []int {
 	ReadInput(fileName, func(scanner *bufio.Scanner) {
 		for scanner.Scan() {
 			line := scanner.Text()
-			num, err := strconv.Atoi(line)
-			MaybePanic(err)
+			num := Atoi(line)
 			arr = append(arr, num)
 		}
 	})

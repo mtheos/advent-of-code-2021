@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math"
 	"sort"
-	"strconv"
 	"strings"
 )
 
@@ -17,8 +16,7 @@ func readInput(fileName string) []int {
 		line := scanner.Text()
 		split := strings.Split(line, ",")
 		for _, crabs := range split {
-			age, err := strconv.Atoi(crabs)
-			MaybePanic(err)
+			age := Atoi(crabs)
 			arr = append(arr, age)
 		}
 	})

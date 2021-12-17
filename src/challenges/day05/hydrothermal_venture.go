@@ -4,7 +4,6 @@ import (
 	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -32,10 +31,8 @@ func readInput(fileName string) []line {
 
 func parsePoint(input string) point {
 	split := strings.Split(input, ",")
-	x, err := strconv.Atoi(split[0])
-	MaybePanic(err)
-	y, err := strconv.Atoi(split[1])
-	MaybePanic(err)
+	x := Atoi(split[0])
+	y := Atoi(split[1])
 	return point{x, y}
 }
 

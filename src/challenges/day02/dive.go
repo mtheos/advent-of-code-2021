@@ -4,7 +4,6 @@ import (
 	. "advent-of-code-2021/src/utils"
 	"bufio"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -44,10 +43,7 @@ func readInput(fileName string) []movement {
 		for scanner.Scan() {
 			words := strings.Fields(scanner.Text())
 			direction := mapDirection(words[0][0])
-			num, err := strconv.Atoi(words[1])
-			if err != nil {
-				panic(err)
-			}
+			num := Atoi(words[1])
 			arr = append(arr, movement{direction: direction, steps: num})
 		}
 	})
