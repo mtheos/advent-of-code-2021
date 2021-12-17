@@ -17,6 +17,7 @@ import (
 	day14 "advent-of-code-2021/src/challenges/day14"
 	day15 "advent-of-code-2021/src/challenges/day15"
 	day16 "advent-of-code-2021/src/challenges/day16"
+	day17 "advent-of-code-2021/src/challenges/day17"
 	"fmt"
 )
 
@@ -134,11 +135,17 @@ func createChallenges() []challenge {
 		ch:    make(chan string),
 		input: "./src/challenges/day15/input.txt",
 	})
-	// packet Decoder
+	// Packet Decoder
 	challenges = append(challenges, challenge{
 		run:   day16.Go,
 		ch:    make(chan string),
 		input: "./src/challenges/day16/input.txt",
+	})
+	// Trick Shot
+	challenges = append(challenges, challenge{
+		run:   day17.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day17/input.txt",
 	})
 	return challenges
 }
