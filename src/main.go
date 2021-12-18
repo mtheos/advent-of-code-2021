@@ -18,6 +18,7 @@ import (
 	day15 "advent-of-code-2021/src/challenges/day15"
 	day16 "advent-of-code-2021/src/challenges/day16"
 	day17 "advent-of-code-2021/src/challenges/day17"
+	day18 "advent-of-code-2021/src/challenges/day18"
 	"fmt"
 )
 
@@ -35,6 +36,7 @@ func printResults(chal challenge) {
 
 func main() {
 	challenges := createChallenges()
+	//challenges = challenges[len(challenges)-1:]
 	for _, chal := range challenges {
 		go chal.run(chal.input, chal.ch)
 	}
@@ -146,6 +148,12 @@ func createChallenges() []challenge {
 		run:   day17.Go,
 		ch:    make(chan string),
 		input: "./src/challenges/day17/input.txt",
+	})
+	// Snailfish
+	challenges = append(challenges, challenge{
+		run:   day18.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day18/input.txt",
 	})
 	return challenges
 }
