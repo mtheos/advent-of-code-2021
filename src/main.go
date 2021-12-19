@@ -19,6 +19,7 @@ import (
 	day16 "advent-of-code-2021/src/challenges/day16"
 	day17 "advent-of-code-2021/src/challenges/day17"
 	day18 "advent-of-code-2021/src/challenges/day18"
+	day19 "advent-of-code-2021/src/challenges/day19"
 	"fmt"
 )
 
@@ -154,6 +155,12 @@ func createChallenges() []challenge {
 		run:   day18.Go,
 		ch:    make(chan string),
 		input: "./src/challenges/day18/input.txt",
+	})
+	// Beacon Scanner
+	challenges = append(challenges, challenge{
+		run:   day19.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day19/input.txt",
 	})
 	return challenges
 }
