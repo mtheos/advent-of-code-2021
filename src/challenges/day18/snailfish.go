@@ -9,8 +9,13 @@ import (
 
 type snailNumber []int32
 
+const (
+	LBRACKET = 90 - '[' // -ve sentinel representation
+	RBRACKET = 90 - ']'
+)
+
 func isBracket(c int32) bool {
-	return c == '[' || c == ']'
+	return c == LBRACKET || c == RBRACKET
 }
 
 func isNotBracket(c int32) bool {
@@ -18,7 +23,7 @@ func isNotBracket(c int32) bool {
 }
 
 func append_(first snailNumber, second snailNumber) snailNumber {
-	return append(append(append(snailNumber{'['}, first...), second...), ']')
+	return append(append(append(snailNumber{LBRACKET}, first...), second...), RBRACKET)
 }
 
 func replace(sn snailNumber, start int, count int, replacements ...int32) snailNumber {
@@ -39,12 +44,15 @@ func parseNumber(s string) snailNumber {
 	var sn snailNumber
 	for _, c := range s {
 		var x int32
-		if c == ',' {
+		switch c {
+		case ',':
 			continue
-		} else if c >= '0' && c <= '9' {
+		case '[':
+			x = LBRACKET
+		case ']':
+			x = RBRACKET
+		default:
 			x = c - '0'
-		} else {
-			x = c
 		}
 		sn = append(sn, x)
 	}
@@ -75,15 +83,15 @@ func explode(sn snailNumber, pos int) snailNumber {
 func split(sn snailNumber, pos int) snailNumber {
 	n := float64(sn[pos]) / 2
 	floor, ceil := int32(math.Floor(n)), int32(math.Ceil(n))
-	return replace(sn, pos, 1, '[', floor, ceil, ']')
+	return replace(sn, pos, 1, LBRACKET, floor, ceil, RBRACKET)
 }
 
 func reduceHelper(sn snailNumber) (snailNumber, bool) {
 	depth := 0
 	for pos := 0; pos < len(sn); pos++ {
-		if sn[pos] == '[' {
+		if sn[pos] == LBRACKET {
 			depth++
-		} else if sn[pos] == ']' {
+		} else if sn[pos] == RBRACKET {
 			depth--
 		} else if depth == 5 {
 			return explode(sn, pos), false
