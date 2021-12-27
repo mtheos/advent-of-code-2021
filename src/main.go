@@ -21,6 +21,7 @@ import (
 	day18 "advent-of-code-2021/src/challenges/day18"
 	day19 "advent-of-code-2021/src/challenges/day19"
 	day20 "advent-of-code-2021/src/challenges/day20"
+	day21 "advent-of-code-2021/src/challenges/day21"
 	"fmt"
 )
 
@@ -168,6 +169,12 @@ func createChallenges() []challenge {
 		run:   day20.Go,
 		ch:    make(chan string),
 		input: "./src/challenges/day20/input.txt",
+	})
+	// Dirac Dice
+	challenges = append(challenges, challenge{
+		run:   day21.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day21/input.txt",
 	})
 	return challenges
 }
