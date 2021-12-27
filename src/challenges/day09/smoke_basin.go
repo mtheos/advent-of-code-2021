@@ -7,7 +7,7 @@ import (
 	"sort"
 )
 
-type Point struct {
+type point struct {
 	x, y int
 }
 
@@ -83,13 +83,13 @@ func ezMode(input [][]int, ch chan<- int) {
 
 func hardMode(input [][]int, ch chan<- int) {
 	var visited [][]bool
-	var lowestPoints []Point
+	var lowestPoints []point
 	for x := range input {
 		visited = append(visited, []bool{})
 		for y := range input[x] {
 			visited[x] = append(visited[x], false)
 			if isLowestPoint(x, y, input) {
-				lowestPoints = append(lowestPoints, Point{x, y})
+				lowestPoints = append(lowestPoints, point{x, y})
 			}
 		}
 	}
