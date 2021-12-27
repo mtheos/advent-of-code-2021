@@ -20,6 +20,7 @@ import (
 	day17 "advent-of-code-2021/src/challenges/day17"
 	day18 "advent-of-code-2021/src/challenges/day18"
 	day19 "advent-of-code-2021/src/challenges/day19"
+	day20 "advent-of-code-2021/src/challenges/day20"
 	"fmt"
 )
 
@@ -161,6 +162,12 @@ func createChallenges() []challenge {
 		run:   day19.Go,
 		ch:    make(chan string),
 		input: "./src/challenges/day19/input.txt",
+	})
+	// Trench Map
+	challenges = append(challenges, challenge{
+		run:   day20.Go,
+		ch:    make(chan string),
+		input: "./src/challenges/day20/input.txt",
 	})
 	return challenges
 }
